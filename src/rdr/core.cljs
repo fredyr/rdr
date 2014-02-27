@@ -104,10 +104,25 @@
                                    (dom/th nil "Date")))
                 (apply dom/tbody nil (om/build-all feed-entry es))))))
 
+(defn feed-input [state owner]
+  (om/component
+   (dom/div
+    nil
+    (dom/input #js {:type "text" :id "feed-input"})
+    (dom/button #js
+                {:onClick (fn []
+                            (let [feed-url (.-value (. js/document getElementById "feed-input"))]
+                              (feed-loader
+                               feed-url
+                               (fn [data]
+                                 (swap! app-state add-feed data)))))}
+                "add feed"))))
+
 (defn feed
   [feed-data owner]
   (om/component
    (dom/div nil
+            (om/build feed-input feed-data)
             (om/build feed-header feed-data)
             (om/build feed-entries (:entries feed-data)))))
 
